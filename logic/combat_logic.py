@@ -1,5 +1,41 @@
 import time
 import random
+import json
+import os
+
+
+
+# Chemin relatif vers le fichier JSONL
+data_path = os.path.join("data", "pokemons_base.jsonl")
+
+def charger_pokemons():
+    pokemons = []
+    with open(data_path, "r", encoding="utf-8") as f:
+        for line in f:
+            data = json.loads(line.strip())  # ligne = un pokémon
+            pokemons.append(data)
+    return pokemons
+
+poklemon_array = charger_pokemons()
+
+def creer_poklemon(donnees):
+    return Poklemon(
+        nom=donnees["name"],
+        type_="/".join(donnees["types"]),  # on fusionne les types en une seule chaîne
+        hp=donnees["stats"]["hp"],
+        attaque=donnees["stats"]["attack"],
+        defense=donnees["stats"]["defense"],
+        vitesse=donnees["stats"]["speed"]
+    )
+
+
+print("Quelle poklemon voules vous ? ")
+for poklemon in poklemon_array[:5]:
+    print(poklemon["name"])
+poklemon_choice= input("ton choix :")
+
+p1 =poklemon_array[int(poklemon_choice)]
+p2 = poklemon_array[random.randint(1,100)]
 
 
 class Poklemon:
@@ -102,25 +138,6 @@ def combat(p1, p2):
         print(f"{p1.nom} a gagné !")
     else:
         print(f"{p2.nom} a gagné !")
-
-
-p1 = {
-    "nom": "Amaura",
-    "type_": "ROCK/ICE",
-    "hp": 77,
-    "attaque": 59,
-    "defense": 50,
-    "vitesse": 46
-}
-
-p2 = {
-    "nom": "Aurorus",
-    "type_": "ROCK/ICE",
-    "hp": 123,
-    "attaque": 77,
-    "defense": 72,
-    "vitesse": 58
-}
 
 
 
