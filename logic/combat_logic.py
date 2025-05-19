@@ -29,7 +29,7 @@ def creer_poklemon(donnees):
     )
 
 print("Quelle poklemon voules vous ? ")
-for poklemon in poklemon_array[:random.randint(1,100)]:
+for poklemon in poklemon_array[:random.randint(10,100)]:
     print(poklemon["name"])
 poklemon_choice= input("ton choix :")
 
