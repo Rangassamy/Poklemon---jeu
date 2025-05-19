@@ -28,13 +28,12 @@ def creer_poklemon(donnees):
         vitesse=donnees["stats"]["speed"]
     )
 
-
 print("Quelle poklemon voules vous ? ")
-for poklemon in poklemon_array[:5]:
+for poklemon in poklemon_array[:random.randint(1,100)]:
     print(poklemon["name"])
 poklemon_choice= input("ton choix :")
 
-p1 =poklemon_array[int(poklemon_choice)]
+p1 =poklemon_array[int(poklemon_choice) - 1]
 p2 = poklemon_array[random.randint(1,100)]
 
 
@@ -140,4 +139,4 @@ def combat(p1, p2):
         print(f"{p2.nom} a gagné !")
 
 
-
+combat(creer_poklemon(p2), creer_poklemon(p1))
