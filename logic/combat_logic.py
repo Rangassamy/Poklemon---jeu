@@ -28,13 +28,25 @@ def creer_poklemon(donnees):
         vitesse=donnees["stats"]["speed"]
     )
 def lancement_du_choix():
-    print("Quelle poklemon voules vous ? ")
-    compteur = 1
-    for poklemon in poklemon_array[:random.randint(10,500)]:
-        print(poklemon["name"] + " - " + str(compteur))
-        compteur += 1
-    poklemon_choice = input("ton choix :")
-    return poklemon_choice
+    print("Choisis ton poklemon parmi cette sélection :")
+    taille_liste = len(poklemon_array)
+    nb_choices = 10
+    
+    # point de départ aléatoire (en évitant de dépasser la fin)
+    start_index = random.randint(0, taille_liste - nb_choices)
+    sous_liste = poklemon_array[start_index:start_index + nb_choices]
+    for i, pok in enumerate(sous_liste):
+        print(f"{i + 1} - {pok['name']}")
+
+    try:
+        choix = int(input("Ton choix (1 à 10) : "))
+        if choix < 1 or choix > nb_choices:
+            raise ValueError
+    except ValueError:
+        print("Choix invalide. Un poklemon sera choisi au hasard.")
+        choix = random.randint(1, nb_choices)
+
+    return choix
 
 class Poklemon:
     def __init__(self, nom, type_, hp, attaque, defense, vitesse):
@@ -140,3 +152,4 @@ def combat():
     else:
         print(f"{p2.nom} a gagné !")
 
+combat()
