@@ -27,15 +27,14 @@ def creer_poklemon(donnees):
         defense=donnees["stats"]["defense"],
         vitesse=donnees["stats"]["speed"]
     )
-
-print("Quelle poklemon voules vous ? ")
-for poklemon in poklemon_array[:random.randint(10,100)]:
-    print(poklemon["name"])
-poklemon_choice= input("ton choix :")
-
-p1 =poklemon_array[int(poklemon_choice) - 1]
-p2 = poklemon_array[random.randint(1,100)]
-
+def lancement_du_choix():
+    print("Quelle poklemon voules vous ? ")
+    compteur = 1
+    for poklemon in poklemon_array[:random.randint(10,500)]:
+        print(poklemon["name"] + " - " + str(compteur))
+        compteur += 1
+    poklemon_choice = input("ton choix :")
+    return poklemon_choice
 
 class Poklemon:
     def __init__(self, nom, type_, hp, attaque, defense, vitesse):
@@ -98,16 +97,19 @@ def tour_de_jeu(joueur, ennemi, joueur_est_humain=True):
         ennemi.prendre_degats(degats)
         print(f"{joueur.nom} attaque {ennemi.nom} et inflige {degats} dégâts !")
         print(f"{ennemi.nom} a {ennemi.hp} HP restants.")
-        time.sleep(0.5)
+        time.sleep(5)
     else:
         print(f"{joueur.nom} se prépare à encaisser les coups.")
-        time.sleep(0.5)
+        time.sleep(5)
 
 
-def combat(p1, p2):
+def combat():
+    
+    p1 =creer_poklemon(poklemon_array[int(lancement_du_choix()) - 1])
+    p2 = creer_poklemon(poklemon_array[random.randint(1,500)])
     print("=== Début du combat ===")
     print(f"{p1.nom} VS {p2.nom}")
-    time.sleep(1)
+    time.sleep(5)
 
     if p1.vitesse >= p2.vitesse:
         tour_joueur = p1
@@ -138,5 +140,3 @@ def combat(p1, p2):
     else:
         print(f"{p2.nom} a gagné !")
 
-
-combat(creer_poklemon(p2), creer_poklemon(p1))
