@@ -15,7 +15,7 @@ etat = "selection"
 combat_en_cours = False
 log_combat = ""
 p1 = None
-p2 = None
+vainqueur = None
 
 
 while running:
@@ -23,6 +23,17 @@ while running:
         afficher_interface_choix(screen)
     elif etat == "combat":
         bouton_attaque, bouton_defense = afficher_interface_combat(screen, p1, p2, log_combat)
+        if p1.vitesse >= p2.vitesse:
+            tour_joueur = p1
+            tour_bot = p2
+            humain_en_premier = True
+        else:
+            tour_joueur = p2
+            tour_bot = p1
+            humain_en_premier = False
+
+        tour = 1
+        
 
 
 
@@ -45,17 +56,39 @@ while running:
 
 
 
-            elif etat == "combat":
-                if bouton_attaque.collidepoint(event.pos):
-                    log_combat = "Tu as attaqué !" 
+            elif etat == "combat" and vainqueur == None:
+                if bouton_attaque.collidepoint(event.pos):              
+                    if vainqueur is None:  # on ne joue plus si le combat est terminé
+                        log_combat = tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True, action="attaquer")
+                        
+                        if tour_bot.is_alive():
+                            log_combat += "\n" + tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
+
+                        # après les deux actions, on vérifie s’il y a un vainqueur
+                        if not p1.is_alive():
+                            vainqueur = p2.nom
+                            log_combat += f"\n{p2.nom} a gagné !"
+                        elif not p2.is_alive():
+                            vainqueur = p1.nom
+                            log_combat += f"\n{p1.nom} a gagné !"
+
                     
                     
                 elif bouton_defense.collidepoint(event.pos):
-                    log_combat = "Tu t'es défendu !"    
+                    if vainqueur is None:  # on ne joue plus si le combat est terminé
+                        log_combat = tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True, action="defendre")
+                        
+                        if tour_bot.is_alive():
+                            log_combat += "\n" + tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
+
+                        # après les deux actions, on vérifie s’il y a un vainqueur
+                        if not p1.is_alive():
+                            vainqueur = p2.nom
+                            log_combat += f"\n{p2.nom} a gagné !"
+                        elif not p2.is_alive():
+                            vainqueur = p1.nom
+                            log_combat += f"\n{p1.nom} a gagné !"     
     
-
-        
-
 
     pygame.display.flip()
     clock.tick(30)

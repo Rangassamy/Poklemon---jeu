@@ -32,10 +32,12 @@ def afficher_interface_combat(screen, p1, p2, log_combat):
     txt_def = font.render("DÉFENDRE", True, (255, 255, 255))
     screen.blit(txt_att, (bouton_attaque.x + 20, bouton_attaque.y + 10))
     screen.blit(txt_def, (bouton_defense.x + 20, bouton_defense.y + 10))
-    
-    log_txt = font.render(log_combat, True, (0, 0, 0))
-    screen.blit(log_txt, (100, 500))
 
+    for i, ligne in enumerate(log_combat.split("\n")):
+        texte = font.render(ligne, True, (0, 0, 0))
+        screen.blit(texte, (100, 300 + i * 25))  # ligne suivante = +25 px
+  
+    
 
     return bouton_attaque, bouton_defense
 
