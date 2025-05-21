@@ -25,7 +25,8 @@ def creer_poklemon(donnees):
         hp=donnees["stats"]["hp"],
         attaque=donnees["stats"]["attack"],
         defense=donnees["stats"]["defense"],
-        vitesse=donnees["stats"]["speed"]
+        vitesse=donnees["stats"]["speed"],
+        image = donnees["image_url"]
     )
 def lancement_du_choix():
     print("Choisis ton poklemon parmi cette sélection :")
@@ -49,7 +50,7 @@ def lancement_du_choix():
     return choix
 
 class Poklemon:
-    def __init__(self, nom, type_, hp, attaque, defense, vitesse):
+    def __init__(self, nom, type_, hp, attaque, defense, vitesse, image):
         self.nom = nom
         self.type = type_
         self.hp = hp
@@ -57,6 +58,7 @@ class Poklemon:
         self.defense = defense
         self.vitesse = vitesse
         self.en_defense = False  # état actif pour le tour
+        self.image = image
 
     def is_alive(self):
         return self.hp > 0
@@ -73,8 +75,9 @@ class Poklemon:
 
 
 def calcul_degats(attaquant, defenseur):
-    base = attaquant.attaque - defenseur.defense
-    return max(1, base)
+    base = attaquant.attaque - defenseur.defense // 2
+    variation = random.randint(-2, 2)
+    return max(25, base + variation)
 
 
 def tour_de_jeu(joueur, ennemi, joueur_est_humain=True):
@@ -109,10 +112,10 @@ def tour_de_jeu(joueur, ennemi, joueur_est_humain=True):
         ennemi.prendre_degats(degats)
         print(f"{joueur.nom} attaque {ennemi.nom} et inflige {degats} dégâts !")
         print(f"{ennemi.nom} a {ennemi.hp} HP restants.")
-        time.sleep(5)
+        time.sleep(2.5)
     else:
         print(f"{joueur.nom} se prépare à encaisser les coups.")
-        time.sleep(5)
+        time.sleep(2.5)
 
 
 def combat():
@@ -121,7 +124,7 @@ def combat():
     p2 = creer_poklemon(poklemon_array[random.randint(1,500)])
     print("=== Début du combat ===")
     print(f"{p1.nom} VS {p2.nom}")
-    time.sleep(5)
+    time.sleep(2.5)
 
     if p1.vitesse >= p2.vitesse:
         tour_joueur = p1
@@ -151,5 +154,3 @@ def combat():
         print(f"{p1.nom} a gagné !")
     else:
         print(f"{p2.nom} a gagné !")
-
-combat()
