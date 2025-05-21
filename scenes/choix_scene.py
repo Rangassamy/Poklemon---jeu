@@ -1,5 +1,4 @@
 import pygame
-import random
 import os
 from logic.combat_logic import lancement_du_choix
 

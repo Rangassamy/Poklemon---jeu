@@ -6,7 +6,7 @@ import random
 
 pygame.init()
 screen = pygame.display.set_mode((1075, 717))
-pygame.display.set_caption("Poklemon - Démo Combat")
+pygame.display.set_caption("Poklemon - Démo jeu")
 
 running = True
 clock = pygame.time.Clock()
@@ -16,6 +16,7 @@ combat_en_cours = False
 log_combat = ""
 p1 = None
 vainqueur = None
+tour = 1
 
 
 while running:
@@ -32,7 +33,7 @@ while running:
             tour_bot = p1
             humain_en_premier = False
 
-        tour = 1
+        
         
 
 
@@ -64,13 +65,15 @@ while running:
                         if tour_bot.is_alive():
                             log_combat += "\n" + tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
 
+                        tour += 1
+
                         # après les deux actions, on vérifie s’il y a un vainqueur
                         if not p1.is_alive():
                             vainqueur = p2.nom
-                            log_combat += f"\n{p2.nom} a gagné !"
+                            log_combat += f"\n{p2.nom} a gagné ! fin de la manche {tour}"
                         elif not p2.is_alive():
                             vainqueur = p1.nom
-                            log_combat += f"\n{p1.nom} a gagné !"
+                            log_combat += f"\n{p1.nom} a gagné ! fin de la manche {tour}"
 
                     
                     
@@ -81,17 +84,19 @@ while running:
                         if tour_bot.is_alive():
                             log_combat += "\n" + tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
 
+                        tour += 1
+
                         # après les deux actions, on vérifie s’il y a un vainqueur
                         if not p1.is_alive():
                             vainqueur = p2.nom
-                            log_combat += f"\n{p2.nom} a gagné !"
+                            log_combat += f"\n{p2.nom} a gagné ! fin de la manche {tour}"
                         elif not p2.is_alive():
                             vainqueur = p1.nom
-                            log_combat += f"\n{p1.nom} a gagné !"     
+                            log_combat += f"\n{p1.nom} a gagné ! fin de la manche {tour}"    
     
 
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(60)
 
 pygame.quit()
 

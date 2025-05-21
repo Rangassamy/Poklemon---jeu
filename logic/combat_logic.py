@@ -3,6 +3,23 @@ import random
 import json
 import os
 import pygame
+import requests
+import io
+
+image_cache = {}
+
+def charger_image_depuis_url(url):
+    if url in image_cache:
+        return image_cache[url]
+
+    try:
+        response = requests.get(url)
+        image = pygame.image.load(io.BytesIO(response.content)).convert_alpha()
+        image_cache[url] = image  # cache l’image
+        return image
+    except:
+        return None
+
 
 class Poklemon:
     def __init__(self, nom, type_, hp, attaque, defense, vitesse, image):
@@ -73,24 +90,31 @@ zones_clickables = []
 def lancement_du_choix(screen):
     zones_clickables.clear()
     font = pygame.font.SysFont("Arial", 20)
-    texte_choix = font.render("Choisis ton poklemon parmi cette sélection :", True, (0, 0, 0))
-    screen.blit(texte_choix, (100, 30))
-
     for i, poklemon in enumerate(choix_poklemon):
-        colonne = i % 10
-        x = 40 + colonne * (80 + 20)
-        y = 60 
+        colonne = i % 5
+        ligne = i // 5
+        x = 40 + colonne * (160 + 50)
+        y = 60 + ligne * (200 + 20)
         nom_texte = font.render(poklemon["name"], True, (0, 0, 0))
-        screen.blit(nom_texte, (x, y))
+        hp_texte = font.render("HP : " + str(poklemon["stats"]["hp"]), True, (0, 0, 0))
         pok_obj = creer_poklemon(poklemon)
-        rect = pygame.Rect(x, y, 70, 30)
+        rect = pygame.Rect( x, y, 160, 200)
+        pygame.draw.rect(screen, (115, 115, 115), rect, border_radius=10)
+        text_rect = nom_texte.get_rect(center=(x + 160 // 2, y + 200 - 60))
+        screen.blit(nom_texte, text_rect)
+        text_hp_rect = hp_texte.get_rect(center=(x + 160 // 2, y + 200 - 40))
+        screen.blit(hp_texte, text_hp_rect)
+        image = charger_image_depuis_url(pok_obj.image)
+        if image:
+            image = pygame.transform.scale(image, (100, 100))
+            screen.blit(image, (x + 40, y + 20))
+
         zones_clickables.append((rect, pok_obj))
 
 
 def calcul_degats(attaquant, defenseur):
-    base = attaquant.attaque - defenseur.defense // 2
-    variation = random.randint(-2, 2)
-    return max(25, base + variation)
+    base = attaquant.attaque - defenseur.defense 
+    return max(10, base)
 
 
 def tour_de_jeu(joueur, ennemi, joueur_est_humain=True, action=None):
