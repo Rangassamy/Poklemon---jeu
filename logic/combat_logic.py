@@ -2,7 +2,31 @@ import time
 import random
 import json
 import os
+import pygame
 
+class Poklemon:
+    def __init__(self, nom, type_, hp, attaque, defense, vitesse, image):
+        self.nom = nom
+        self.type = type_
+        self.hp = hp
+        self.attaque = attaque
+        self.defense = defense
+        self.vitesse = vitesse
+        self.en_defense = False  # état actif pour le tour
+        self.image = image
+
+    def is_alive(self):
+        return self.hp > 0
+
+    def prendre_degats(self, degats):
+        if self.en_defense:
+            degats = degats // 2
+        self.hp -= degats
+        if self.hp < 0:
+            self.hp = 0
+
+    def __str__(self):
+        return f"{self.nom} [{self.type}] HP:{self.hp} ATQ:{self.attaque} DEF:{self.defense} VIT:{self.vitesse} IMG:{self.image}"
 
 
 # Chemin relatif vers le fichier JSONL
@@ -28,50 +52,39 @@ def creer_poklemon(donnees):
         vitesse=donnees["stats"]["speed"],
         image = donnees["image_url"]
     )
-def lancement_du_choix():
-    print("Choisis ton poklemon parmi cette sélection :")
+
+def generer_selection_poklemon():
     taille_liste = len(poklemon_array)
     nb_choices = 10
     
     # point de départ aléatoire (en évitant de dépasser la fin)
     start_index = random.randint(0, taille_liste - nb_choices)
     sous_liste = poklemon_array[start_index:start_index + nb_choices]
-    for i, pok in enumerate(sous_liste):
-        print(f"{i + 1} - {pok['name']}")
+    array = []
+    for poklemon in sous_liste: 
+        array.append(poklemon)
+    return array
 
-    try:
-        choix = int(input("Ton choix (1 à 10) : "))
-        if choix < 1 or choix > nb_choices:
-            raise ValueError
-    except ValueError:
-        print("Choix invalide. Un poklemon sera choisi au hasard.")
-        choix = random.randint(1, nb_choices)
+choix_poklemon = generer_selection_poklemon()
 
-    return choix
 
-class Poklemon:
-    def __init__(self, nom, type_, hp, attaque, defense, vitesse, image):
-        self.nom = nom
-        self.type = type_
-        self.hp = hp
-        self.attaque = attaque
-        self.defense = defense
-        self.vitesse = vitesse
-        self.en_defense = False  # état actif pour le tour
-        self.image = image
+zones_clickables = []
 
-    def is_alive(self):
-        return self.hp > 0
+def lancement_du_choix(screen):
+    zones_clickables.clear()
+    font = pygame.font.SysFont("Arial", 20)
+    texte_choix = font.render("Choisis ton poklemon parmi cette sélection :", True, (0, 0, 0))
+    screen.blit(texte_choix, (100, 30))
 
-    def prendre_degats(self, degats):
-        if self.en_defense:
-            degats = degats // 2
-        self.hp -= degats
-        if self.hp < 0:
-            self.hp = 0
-
-    def __str__(self):
-        return f"{self.nom} [{self.type}] HP:{self.hp} ATQ:{self.attaque} DEF:{self.defense} VIT:{self.vitesse}"
+    for i, poklemon in enumerate(choix_poklemon):
+        colonne = i % 10
+        x = 40 + colonne * (80 + 20)
+        y = 60 
+        nom_texte = font.render(poklemon["name"], True, (0, 0, 0))
+        screen.blit(nom_texte, (x, y))
+        pok_obj = creer_poklemon(poklemon)
+        rect = pygame.Rect(x, y, 70, 30)
+        zones_clickables.append((rect, pok_obj))
 
 
 def calcul_degats(attaquant, defenseur):
@@ -119,38 +132,36 @@ def tour_de_jeu(joueur, ennemi, joueur_est_humain=True):
 
 
 def combat():
-    
-    p1 =creer_poklemon(poklemon_array[int(lancement_du_choix()) - 1])
-    p2 = creer_poklemon(poklemon_array[random.randint(1,500)])
-    print("=== Début du combat ===")
-    print(f"{p1.nom} VS {p2.nom}")
-    time.sleep(2.5)
+    print("en attente de conversion")
+    # print("=== Début du combat ===")
+    # print(f"{p1.nom} VS {p2.nom}")
+    # time.sleep(2.5)
 
-    if p1.vitesse >= p2.vitesse:
-        tour_joueur = p1
-        tour_bot = p2
-        humain_en_premier = True
-    else:
-        tour_joueur = p2
-        tour_bot = p1
-        humain_en_premier = False
+    # if p1.vitesse >= p2.vitesse:
+    #     tour_joueur = p1
+    #     tour_bot = p2
+    #     humain_en_premier = True
+    # else:
+    #     tour_joueur = p2
+    #     tour_bot = p1
+    #     humain_en_premier = False
 
-    tour = 1
-    while p1.is_alive() and p2.is_alive():
-        print(f"\n-- Tour {tour} --")
-        if humain_en_premier:
-            tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True)
-            if tour_bot.is_alive():
-                tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
-        else:
-            tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
-            if tour_joueur.is_alive():
-                tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True)
+    # tour = 1
+    # while p1.is_alive() and p2.is_alive():
+    #     print(f"\n-- Tour {tour} --")
+    #     if humain_en_premier:
+    #         tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True)
+    #         if tour_bot.is_alive():
+    #             tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
+    #     else:
+    #         tour_de_jeu(tour_bot, tour_joueur, joueur_est_humain=False)
+    #         if tour_joueur.is_alive():
+    #             tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True)
 
-        tour += 1
+    #     tour += 1
 
-    print("\n=== Fin du combat ===")
-    if p1.is_alive():
-        print(f"{p1.nom} a gagné !")
-    else:
-        print(f"{p2.nom} a gagné !")
+    # print("\n=== Fin du combat ===")
+    # if p1.is_alive():
+    #     print(f"{p1.nom} a gagné !")
+    # else:
+    #     print(f"{p2.nom} a gagné !")
