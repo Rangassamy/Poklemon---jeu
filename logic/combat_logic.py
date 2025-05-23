@@ -90,6 +90,7 @@ zones_clickables = []
 def lancement_du_choix(screen):
     zones_clickables.clear()
     font = pygame.font.SysFont("Arial", 20)
+    font_explicative = pygame.font.SysFont("Arial", 50)
     for i, poklemon in enumerate(choix_poklemon):
         colonne = i % 5
         ligne = i // 5
@@ -110,6 +111,10 @@ def lancement_du_choix(screen):
             screen.blit(image, (x + 40, y + 20))
 
         zones_clickables.append((rect, pok_obj))
+        texte_explicatif_pour_Madame_Teilhaud = font_explicative.render("Veuillez cliquer sur un poklemon pour combatre", True, (255, 255, 255))
+        screen.blit(texte_explicatif_pour_Madame_Teilhaud, (80, 500))
+
+
 
 
 def calcul_degats(attaquant, defenseur):

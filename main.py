@@ -3,6 +3,9 @@ from scenes.choix_scene import afficher_interface_choix
 from scenes.combat_scene import afficher_interface_combat
 from logic.combat_logic import zones_clickables, choix_poklemon, creer_poklemon, tour_de_jeu
 import random
+from scenes.home_scene import affichage_home
+from pygame import *
+import time
 
 pygame.init()
 screen = pygame.display.set_mode((1075, 717))
@@ -11,32 +14,33 @@ pygame.display.set_caption("Poklemon - Démo jeu")
 running = True
 clock = pygame.time.Clock()
 
-etat = "selection"
+etat = "home"
 combat_en_cours = False
 log_combat = ""
 p1 = None
 vainqueur = None
 tour = 1
+fonts = font.Font("Assets/PixelPolice.ttf", 15)
+control_text = fonts.render("CENTRE DE CONTROLE", True, (255, 255, 255))
+control_button = control_text.get_rect(center=(180, 460))
+bouton_attaque = None
+bouton_defense = None
 
 
 while running:
-    if etat == "selection":
+    if etat == "home":
+        affichage_home(screen)
+    elif etat == "selection":
         afficher_interface_choix(screen)
     elif etat == "combat":
         bouton_attaque, bouton_defense = afficher_interface_combat(screen, p1, p2, log_combat)
         if p1.vitesse >= p2.vitesse:
             tour_joueur = p1
             tour_bot = p2
-            humain_en_premier = True
         else:
             tour_joueur = p2
             tour_bot = p1
-            humain_en_premier = False
-
-        
-        
-
-
+   
 
 
     for event in pygame.event.get():
@@ -53,13 +57,22 @@ while running:
                         p2 = creer_poklemon(random.choice([x for x in choix_poklemon if x["name"] != p1.nom]))
                         etat = "combat"
                         combat_en_cours = True
-                        log_combat = "Combat engagé !"
+                        if p1.vitesse > p2.vitesse:
+                            rapidos = p1.nom
+                        else:
+                            rapidos = p2.nom
+                        log_combat = "Combat engagé ! c'est au tour de " + rapidos
+            if etat == "home":
+                if control_button.collidepoint(event.pos):
+                  etat = "selection"
+                 
 
 
 
             elif etat == "combat" and vainqueur == None:
-                if bouton_attaque.collidepoint(event.pos):              
+                if bouton_attaque and bouton_defense and bouton_attaque.collidepoint(event.pos):           
                     if vainqueur is None:  # on ne joue plus si le combat est terminé
+                       
                         log_combat = tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True, action="attaquer")
                         
                         if tour_bot.is_alive():
@@ -77,7 +90,7 @@ while running:
 
                     
                     
-                elif bouton_defense.collidepoint(event.pos):
+                elif bouton_attaque and bouton_defense and bouton_defense.collidepoint(event.pos):
                     if vainqueur is None:  # on ne joue plus si le combat est terminé
                         log_combat = tour_de_jeu(tour_joueur, tour_bot, joueur_est_humain=True, action="defendre")
                         
